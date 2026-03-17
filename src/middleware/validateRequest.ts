@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
-import type { ZodTypeAny } from 'zod';
 import { ZodError } from 'zod';
+import type { ZodType } from 'zod';
 import { ValidationError } from '../errors/ValidationError.js';
 
 export interface ValidateRequestOptions {
@@ -9,14 +9,14 @@ export interface ValidateRequestOptions {
 
 function parseSection(
     section: 'body' | 'query' | 'params' | 'headers',
-    schema: ZodTypeAny,
+    schema: ZodType,
     value: unknown,
 ) {
     try {
-        return schema.parse(value) as unknown;
+        return schema.parse(value);
     } catch (error) {
         if (error instanceof ZodError) {
-            const fields = error.errors.map((err) => ({
+            const fields = error.issues.map((err) => ({
                 path: [section, ...err.path].join('.'),
                 message: err.message,
                 code: err.code,
@@ -30,10 +30,10 @@ function parseSection(
 
 export function validateRequest(
     schemas: {
-        body?: ZodTypeAny;
-        query?: ZodTypeAny;
-        params?: ZodTypeAny;
-        headers?: ZodTypeAny;
+        body?: ZodType;
+        query?: ZodType;
+        params?: ZodType;
+        headers?: ZodType;
     },
     options: ValidateRequestOptions = { mode: 'validated' },
 ): RequestHandler {

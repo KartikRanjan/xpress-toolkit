@@ -1,6 +1,6 @@
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 import type { OpenApiRegistry, RouteDoc } from './types.js';
-import type { ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 
 export interface CreateRegistryOptions {
     title: string;
@@ -11,7 +11,7 @@ export function createOpenApiRegistry(_options: CreateRegistryOptions): OpenApiR
     const registry = new OpenAPIRegistry();
 
     return {
-        registerSchema(name: string, schema: ZodSchema) {
+        registerSchema(name: string, schema: ZodType) {
             registry.register(name, schema);
         },
 
@@ -22,20 +22,22 @@ export function createOpenApiRegistry(_options: CreateRegistryOptions): OpenApiR
                 summary: route.summary,
                 description: route.description,
                 tags: route.tags,
-                request: {
-                    params: route.request?.params,
-                    query: route.request?.query,
-                    headers: route.request?.headers,
-                    body: route.request?.body
-                        ? {
-                              content: {
-                                  'application/json': {
-                                      schema: route.request.body,
-                                  },
-                              },
-                          }
-                        : undefined,
-                },
+                request: route.request
+                    ? {
+                          params: route.request.params,
+                          query: route.request.query,
+                          headers: route.request.headers,
+                          body: route.request.body
+                              ? {
+                                    content: {
+                                        'application/json': {
+                                            schema: route.request.body,
+                                        },
+                                    },
+                                }
+                              : undefined,
+                      }
+                    : undefined,
                 responses: Object.fromEntries(
                     Object.entries(route.responses).map(([status, res]) => [
                         status,

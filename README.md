@@ -1,4 +1,4 @@
-# @kartik/express-toolkit
+# xpress-toolkit
 
 A focused, TypeScript-first utility package for Express applications. This toolkit provides standardized building blocks for request validation, error modeling, logging, and OpenAPI/Swagger documentation without hiding Express itself.
 
@@ -15,7 +15,7 @@ A focused, TypeScript-first utility package for Express applications. This toolk
 ## Installation
 
 ```bash
-npm install @kartik/express-toolkit zod
+npm install xpress-toolkit zod
 ```
 
 If you plan to use Swagger/OpenAPI features, install the optional peer dependencies:
@@ -31,7 +31,7 @@ npm install swagger-ui-express @asteasolutions/zod-to-openapi
 Use the `validateRequest` middleware to ensure incoming data matches your Zod schemas. It automatically handles `ZodError` by throwing a `ValidationError`.
 
 ```typescript
-import { validateRequest } from '@kartik/express-toolkit';
+import { validateRequest } from 'xpress-toolkit';
 import { z } from 'zod';
 
 const loginBodySchema = z.object({
@@ -64,7 +64,7 @@ app.post(
 );
 ```
 
-*Note: For TypeScript to recognize `req.validated`, import the types: `import '@kartik/express-toolkit/types/express';`*
+*Note: For TypeScript to recognize `req.validated`, import the types: `import 'xpress-toolkit/types/express';`*
 
 ---
 
@@ -73,7 +73,7 @@ app.post(
 Standardize your API responses using the built-in error classes and the `globalErrorHandler`.
 
 ```typescript
-import { AppError, globalErrorHandler } from '@kartik/express-toolkit';
+import { AppError, globalErrorHandler } from 'xpress-toolkit';
 
 // Throw standard operational errors
 app.get('/broken', (req, res) => {
@@ -94,11 +94,10 @@ The error response will look like this:
 ```json
 {
     "success": false,
-    "error": {
-        "message": "Resource not found",
-        "code": "NOT_FOUND",
-        "details": null
-    }
+    "message": "Resource not found",
+    "errorCode": "NOT_FOUND",
+    "errors": [],
+    "timestamp": "2026-03-17T18:00:00.000Z"
 }
 ```
 
@@ -109,7 +108,7 @@ The error response will look like this:
 This toolkit includes structured logging built on `pino`. It automatically uses `pino-pretty` in development.
 
 ```typescript
-import { createLogger, requestLogger } from '@kartik/express-toolkit';
+import { createLogger, requestLogger } from 'xpress-toolkit';
 
 // 1. Create a logger instance
 const logger = createLogger({ level: 'info' });
@@ -134,7 +133,7 @@ The toolkit provides a dedicated subpath (`/swagger`) for Swagger support to kee
 Use your Zod schemas to define your API surface and documentation together.
 
 ```typescript
-import { createOpenApiRegistry, setupSwagger } from '@kartik/express-toolkit/swagger';
+import { createOpenApiRegistry, setupSwagger } from 'xpress-toolkit/swagger';
 import { z } from 'zod';
 import express from 'express';
 

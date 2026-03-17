@@ -1,6 +1,6 @@
 {
-    "name": "express-toolkit",
-    "version": "1.0.0",
+    "name": "xpress-toolkit",
+    "version": "1.0.2",
     "description": "A comprehensive utility package for Express applications",
     "type": "module",
     "main": "./dist/cjs/index.js",
@@ -23,8 +23,9 @@
         "./package.json": "./package.json"
     },
     "scripts": {
-        "build": "tsc && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-        "prepublishOnly": "npm run build",
+        "clean": "rm -rf dist",
+        "build": "npm run clean && tsc -p tsconfig.build.json && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+        "prepublishOnly": "npm run lint && npm run test && npm run build",
         "test": "vitest run",
         "test:watch": "vitest",
         "demo": "tsx examples/swagger-demo.ts",
@@ -41,43 +42,52 @@
     "keywords": [
         "express",
         "toolkit",
+        "middleware",
         "validation",
+        "zod",
         "swagger",
-        "openapi"
+        "openapi",
+        "typescript"
     ],
     "author": "Kartik <kartikranjan.work@gmail.com>",
     "license": "MIT",
     "dependencies": {
-        "pino": "^9.0.0"
+        "pino": "^10.3.1"
     },
     "peerDependencies": {
-        "express": "^4.18 || ^5.0.0",
-        "zod": "^3.0.0"
+        "@asteasolutions/zod-to-openapi": "^8.4.3",
+        "express": "^5.2.1",
+        "swagger-ui-express": "^5.0.1",
+        "zod": "^4.3.6"
     },
-    "optionalPeerDependencies": {
-        "swagger-ui-express": "^5.0.0",
-        "@asteasolutions/zod-to-openapi": "^7.0.0"
+    "peerDependenciesMeta": {
+        "@asteasolutions/zod-to-openapi": {
+            "optional": true
+        },
+        "swagger-ui-express": {
+            "optional": true
+        }
     },
     "devDependencies": {
-        "@asteasolutions/zod-to-openapi": "^7.0.0",
         "@eslint/js": "^10.0.1",
-        "@types/express": "^4.17.21",
-        "@types/node": "^20.0.0",
-        "@types/supertest": "^6.0.2",
-        "@types/swagger-ui-express": "^4.1.6",
+        "@types/express": "^5.0.6",
+        "@types/node": "^25.5.0",
+        "@types/supertest": "^7.2.0",
+        "@types/swagger-ui-express": "^4.1.8",
         "eslint": "^10.0.3",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.5",
-        "express": "^4.18.2",
         "globals": "^17.4.0",
-        "pino-pretty": "^11.0.0",
+        "pino-pretty": "^13.1.3",
         "prettier": "^3.8.1",
-        "supertest": "^6.3.4",
-        "swagger-ui-express": "^5.0.0",
-        "tsx": "^4.7.1",
-        "typescript": "^5.0.0",
+        "supertest": "^7.2.2",
+        "tsx": "^4.21.0",
+        "typescript": "^5.9.3",
         "typescript-eslint": "^8.57.1",
-        "vitest": "^1.3.1",
-        "zod": "^3.22.4"
+        "vitest": "^4.1.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/KartikRanjan/express-toolkit.git"
     }
 }

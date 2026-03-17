@@ -1,0 +1,21 @@
+# Source and Build Config
+src/
+tsconfig.json
+tsconfig.build.json
+tsconfig.cjs.json
+eslint.config.js
+.prettierrc
+.prettierignore
+
+# Tests
+**/*.test.ts
+**/*.test.js
+test-cjs.cjs
+test-esm.mjs
+test-types.ts
+
+# Examples
+examples/
+
+# Lockfiles (optional, usually recommended to keep if you want to lock peer deps, but for libs it's often ignored)
+package-lock.json
