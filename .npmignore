@@ -1,6 +1,7 @@
 # Source and Build Config
 src/
 tsconfig.json
+tsconfig.build.json
 tsconfig.cjs.json
 eslint.config.js
 .prettierrc

@@ -24,7 +24,7 @@
     },
     "scripts": {
         "clean": "rm -rf dist",
-        "build": "npm run clean && tsc && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+        "build": "npm run clean && tsc -p tsconfig.build.json && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
         "prepublishOnly": "npm run lint && npm run test && npm run build",
         "test": "vitest run",
         "test:watch": "vitest",
