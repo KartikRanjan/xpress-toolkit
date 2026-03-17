@@ -42,9 +42,12 @@
     "keywords": [
         "express",
         "toolkit",
+        "middleware",
         "validation",
+        "zod",
         "swagger",
-        "openapi"
+        "openapi",
+        "typescript"
     ],
     "author": "Kartik <kartikranjan.work@gmail.com>",
     "license": "MIT",
