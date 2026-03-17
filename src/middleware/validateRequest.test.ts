@@ -111,7 +111,7 @@ describe('validateRequest', () => {
             body: z.object({
                 users: z.array(
                     z.object({
-                        email: z.string().email(),
+                        email: z.email(),
                     }),
                 ),
             }),
@@ -136,19 +136,16 @@ describe('validateRequest', () => {
         expect(res.statusCode).toBe(400);
         expect(res.body).toEqual({
             success: false,
-            error: {
-                message: 'Validation failed',
-                code: 'VALIDATION_ERROR',
-                details: {
-                    fields: [
-                        {
-                            path: 'body.users.0.email',
-                            message: 'Invalid email',
-                            code: 'invalid_string',
-                        },
-                    ],
+            message: 'Validation failed',
+            errorCode: 'VALIDATION_ERROR',
+            errors: [
+                {
+                    path: 'body.users.0.email',
+                    message: 'Invalid email address',
+                    code: 'invalid_format',
                 },
-            },
+            ],
+            timestamp: expect.any(String) as string,
         });
     });
 });

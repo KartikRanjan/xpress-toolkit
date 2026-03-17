@@ -51,11 +51,10 @@ describe('globalErrorHandler', () => {
         expect(res.statusCode).toBe(400);
         expect(res.body).toEqual({
             success: false,
-            error: {
-                message: 'Bad request',
-                code: 'BAD_REQUEST',
-                details: { field: 'email' },
-            },
+            message: 'Bad request',
+            errorCode: 'BAD_REQUEST',
+            errors: [{ field: 'email' }],
+            timestamp: expect.any(String) as string,
         });
         expect(onError).toHaveBeenCalledTimes(1);
         expect(logger.error).toHaveBeenCalledWith(
@@ -80,11 +79,10 @@ describe('globalErrorHandler', () => {
         expect(res.statusCode).toBe(500);
         expect(res.body).toEqual({
             success: false,
-            error: {
-                message: 'Internal Server Error',
-                code: 'INTERNAL_SERVER_ERROR',
-                details: null,
-            },
+            message: 'Internal Server Error',
+            errorCode: 'INTERNAL_SERVER_ERROR',
+            errors: [],
+            timestamp: expect.any(String) as string,
         });
         expect(consoleError).toHaveBeenCalledTimes(1);
         expect(consoleError).toHaveBeenCalledWith(error);
@@ -103,9 +101,8 @@ describe('globalErrorHandler', () => {
         handler(error, req as never, res as never, next);
 
         expect(res.statusCode).toBe(500);
-        expect((res.body as { error: { message: string } }).error.message).toBe(
-            'Internal Server Error',
-        );
-        expect((res.body as { error: { stack: string } }).error.stack).toContain('Error: Boom');
+        const body = res.body as { message: string; stack: string };
+        expect(body.message).toBe('Internal Server Error');
+        expect(body.stack).toContain('Error: Boom');
     });
 });
