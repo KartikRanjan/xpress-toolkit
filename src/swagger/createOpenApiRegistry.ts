@@ -1,27 +1,43 @@
 import { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
-import type { OpenApiRegistry, RouteDoc } from './types.js';
+import type { CreateRegistryOptions, OpenApiRegistry, RouteDoc } from './types.js';
 import type { ZodType } from 'zod';
+import type { SecuritySchemeObject } from 'openapi3-ts/oas30';
 
-export interface CreateRegistryOptions {
-    title: string;
-    version: string;
-}
-
-export function createOpenApiRegistry(_options: CreateRegistryOptions): OpenApiRegistry {
+export function createOpenApiRegistry(options: CreateRegistryOptions): OpenApiRegistry {
     const registry = new OpenAPIRegistry();
+
+    // Automatically register the security scheme if provided in options
+    if (options.auth) {
+        registry.registerComponent('securitySchemes', options.auth.name, options.auth.scheme);
+    }
 
     return {
         registerSchema(name: string, schema: ZodType) {
             registry.register(name, schema);
         },
 
+        registerSecurityScheme(name: string, scheme: SecuritySchemeObject) {
+            registry.registerComponent('securitySchemes', name, scheme);
+        },
+
         registerRoute(route: RouteDoc) {
+            const security = route.authenticate
+                ? [
+                      {
+                          [typeof route.authenticate === 'string'
+                              ? route.authenticate
+                              : (options.auth?.name ?? 'bearerAuth')]: [],
+                      },
+                  ]
+                : undefined;
+
             registry.registerPath({
                 method: route.method,
                 path: route.path,
                 summary: route.summary,
                 description: route.description,
                 tags: route.tags,
+                security,
                 request: route.request
                     ? {
                           params: route.request.params,
@@ -58,6 +74,10 @@ export function createOpenApiRegistry(_options: CreateRegistryOptions): OpenApiR
 
         getRegistry() {
             return registry;
+        },
+
+        getOptions() {
+            return options;
         },
     };
 }

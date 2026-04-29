@@ -115,4 +115,90 @@ describe('Swagger Integration', () => {
         expect(documentA.components?.schemas?.OnlyInA).toBeDefined();
         expect(documentB.components?.schemas?.OnlyInA).toBeUndefined();
     });
+
+    it('should automatically register security scheme and apply to routes with authenticate: true', () => {
+        const registry = createOpenApiRegistry({
+            title: 'Auth API',
+            version: '1.0.0',
+            auth: {
+                name: 'bearerAuth',
+                scheme: { type: 'http', scheme: 'bearer' },
+            },
+        });
+
+        registry.registerRoute({
+            method: 'get',
+            path: '/protected',
+            authenticate: true,
+            responses: {
+                200: {
+                    description: 'OK',
+                },
+            },
+        });
+
+        const document = new OpenApiGeneratorV3(
+            registry.getRegistry().definitions,
+        ).generateDocument({
+            openapi: '3.0.0',
+            info: { title: 'Auth API', version: '1.0.0' },
+        });
+
+        // Check if security scheme is registered
+        expect(document.components?.securitySchemes?.bearerAuth).toEqual({
+            type: 'http',
+            scheme: 'bearer',
+        });
+
+        // Check if route has security requirement
+        expect(document.paths['/protected'].get?.security).toContainEqual({
+            bearerAuth: [],
+        });
+    });
+
+    it('should allow custom security scheme names in routes', () => {
+        const registry = createOpenApiRegistry({
+            title: 'Custom Auth API',
+            version: '1.0.0',
+        });
+
+        registry.registerSecurityScheme('customAuth', {
+            type: 'apiKey',
+            in: 'header',
+            name: 'X-API-KEY',
+        });
+
+        registry.registerRoute({
+            method: 'get',
+            path: '/custom-protected',
+            authenticate: 'customAuth',
+            responses: { 200: { description: 'OK' } },
+        });
+
+        const document = new OpenApiGeneratorV3(
+            registry.getRegistry().definitions,
+        ).generateDocument({
+            openapi: '3.0.0',
+            info: { title: 'Custom Auth API', version: '1.0.0' },
+        });
+
+        expect(document.paths['/custom-protected'].get?.security).toContainEqual({
+            customAuth: [],
+        });
+    });
+
+    it('should provide access to options via getOptions', () => {
+        const options = {
+            title: 'Options API',
+            version: '2.0.0',
+            auth: {
+                name: 'jwt',
+                scheme: { type: 'http', scheme: 'bearer' } as const,
+                autoRefresh: { endpoint: '/refresh', tokenPath: 'token' },
+            },
+        };
+        const registry = createOpenApiRegistry(options);
+
+        expect(registry.getOptions()).toEqual(options);
+    });
 });
